@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="theme-color" content="#0f3d2e">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Uras Apartmanı">
+<title>Uras Apartmanı</title>
+<style>
+:root{
+  --forest:#0f3d2e;--forest2:#1a5c43;--mint:#2ecc71;--mint-light:#a8f0cb;
+  --cream:#f7f5f0;--white:#fff;--red:#e74c3c;--gray:#6b7280;--border:#e2ddd5;
+  --shadow:0 2px 12px rgba(15,61,46,0.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--cream);color:var(--forest);min-height:100vh;padding-bottom:80px;}
+
+header{background:var(--forest);color:#fff;padding:20px 20px 16px;border-bottom:2px solid var(--mint);text-align:center;}
+header .logo{font-size:36px;margin-bottom:6px;}
+header h1{font-size:1.1rem;font-weight:700;}
+header p{font-size:0.75rem;color:var(--mint-light);margin-top:3px;}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom);box-shadow:0 -2px 12px rgba(0,0,0,0.08);}
+.bottom-nav button{flex:1;background:none;border:none;padding:9px 2px 7px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:0.58rem;color:var(--gray);cursor:pointer;position:relative;}
+.bottom-nav button .icon{font-size:18px;}
+.bottom-nav button.active{color:var(--forest);}
+
+.acil-card{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-top:1px solid var(--border);}
+.acil-card:first-child{border-top:none;}
+.acil-card .acil-label{font-size:0.85rem;font-weight:600;color:var(--forest);}
+.acil-card .acil-sub{font-size:0.72rem;color:var(--gray);margin-top:2px;}
+.acil-card a{background:var(--forest);color:#fff;border-radius:8px;padding:8px 16px;font-size:0.85rem;font-weight:600;text-decoration:none;white-space:nowrap;}
+.acil-note{padding:14px 16px;font-size:0.82rem;color:#374151;line-height:1.6;border-top:1px solid var(--border);}
+.badge-dot{position:absolute;top:6px;right:calc(50% - 14px);background:var(--red);color:#fff;border-radius:99px;font-size:0.6rem;padding:1px 5px;font-weight:700;display:none;}
+.badge-dot.show{display:block;}
+
+.page{display:none;padding:16px;}
+.page.active{display:block;}
+
+.month-bar{display:flex;gap:8px;margin-bottom:14px;}
+.month-bar select{flex:1;border:1px solid var(--border);border-radius:8px;padding:9px 10px;font-size:0.85rem;background:#fff;color:var(--forest);outline:none;}
+
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
+.card{background:#fff;border-radius:12px;padding:16px;box-shadow:var(--shadow);border-top:3px solid var(--mint);}
+.card .clabel{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--gray);margin-bottom:6px;}
+.card .cval{font-size:1.4rem;font-weight:700;}
+.card .cval.green{color:var(--forest);}
+.card .cval.red{color:var(--red);}
+
+.progress-wrap{margin-top:10px;}
+.progress-label{display:flex;justify-content:space-between;font-size:0.72rem;color:var(--gray);margin-bottom:4px;}
+.progress-bar{height:8px;background:#e0f7ef;border-radius:99px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--mint);border-radius:99px;transition:width 0.5s ease;}
+
+.box{background:#fff;border-radius:12px;box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden;}
+.box-head{background:var(--forest);color:#fff;padding:13px 16px;font-size:0.9rem;font-weight:600;display:flex;align-items:center;justify-content:space-between;}
+.box-head span{font-size:0.75rem;color:var(--mint-light);}
+
+.tbl-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+th{background:#f0ece4;padding:10px 12px;text-align:left;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.7px;color:var(--gray);}
+td{padding:10px 12px;border-top:1px solid var(--border);}
+
+.kat{display:inline-block;padding:2px 8px;border-radius:12px;font-size:0.72rem;font-weight:600;}
+.kat-temizlik{background:#e3f2fd;color:#1565c0;}
+.kat-elektrik{background:#fff9c4;color:#f57f17;}
+.kat-su{background:#e0f7fa;color:#00695c;}
+.kat-dogalgaz{background:#fce4ec;color:#880e4f;}
+.kat-bakim{background:#f3e5f5;color:#6a1b9a;}
+.kat-diger{background:#f1f8e9;color:#388e3c;}
+
+.empty{text-align:center;padding:32px 16px;color:var(--gray);font-size:0.85rem;}
+.info-note{background:#e0f7ef;border-left:3px solid var(--mint);border-radius:0 8px 8px 0;padding:10px 14px;font-size:0.78rem;color:var(--forest2);margin-bottom:14px;line-height:1.5;}
+
+/* MESAJLAR */
+.msg-list{padding:12px;max-height:400px;overflow-y:auto;}
+.msg-bubble{margin-bottom:10px;max-width:85%;}
+.msg-bubble.yonetici{margin-right:auto;}
+.msg-bubble.sakin{margin-left:auto;}
+.msg-inner{padding:10px 14px;border-radius:12px;font-size:0.85rem;line-height:1.5;}
+.msg-bubble.yonetici .msg-inner{background:var(--forest);color:#fff;border-bottom-left-radius:3px;}
+.msg-bubble.sakin .msg-inner{background:#d4f0e2;color:var(--forest);border-bottom-right-radius:3px;}
+.msg-meta{font-size:0.68rem;color:var(--gray);margin-top:3px;padding:0 4px;}
+.msg-bubble.sakin .msg-meta{text-align:right;}
+.msg-input-area{padding:12px 16px;border-top:1px solid var(--border);}
+.msg-daire-row{display:flex;gap:8px;margin-bottom:8px;}
+.msg-daire-row select{flex:1;border:1px solid var(--border);border-radius:8px;padding:9px 10px;font-size:0.85rem;background:var(--cream);color:var(--forest);outline:none;}
+.msg-mydaire-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);background:#f7faf8;}
+.msg-mydaire-bar label{font-size:0.78rem;font-weight:600;color:var(--gray);white-space:nowrap;}
+.msg-mydaire-bar select{flex:1;border:1px solid var(--border);border-radius:8px;padding:7px 10px;font-size:0.82rem;background:#fff;color:var(--forest);outline:none;}
+.msg-send-row{display:flex;gap:8px;}
+.msg-send-row input{flex:1;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:0.9rem;outline:none;background:var(--cream);}
+.msg-send-row input:focus{border-color:var(--mint);background:#fff;}
+.msg-send-btn{background:var(--forest);color:#fff;border:none;border-radius:8px;padding:10px 16px;font-size:0.85rem;font-weight:600;cursor:pointer;}
+
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--forest);color:#fff;padding:10px 20px;border-radius:20px;font-size:0.85rem;opacity:0;pointer-events:none;transition:opacity 0.3s;z-index:999;white-space:nowrap;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🏠</div>
+  <h1>Uras Apartmanı</h1>
+  <p>Nil Konutları – Sakin Bilgi Ekranı</p>
+</header>
+
+<div id="page-ozet" class="page active">
+  <div class="month-bar" style="margin-top:4px;">
+    <select id="o-ay" onchange="renderOzet()"></select>
+    <select id="o-yil" onchange="renderOzet()"></select>
+  </div>
+  <div class="info-note">ℹ️ Kişisel bilgiler bu ekranda görünmez. Apartman geneli veriler paylaşılmaktadır.</div>
+  <div class="cards" id="ozet-cards"></div>
+  <div id="aidat-progress"></div>
+</div>
+
+<div id="page-giderler" class="page">
+  <div class="month-bar" style="margin-top:4px;">
+    <select id="g-ay" onchange="renderGiderler()"></select>
+    <select id="g-yil" onchange="renderGiderler()"></select>
+  </div>
+  <div class="box">
+    <div class="box-head">Gider Listesi <span id="gider-top-text"></span></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Tarih</th><th>Açıklama</th><th>Kategori</th><th>Tutar</th></tr></thead>
+        <tbody id="gider-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="page-gecmis" class="page">
+  <div class="box">
+    <div class="box-head">Tüm Aylar Özeti</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Ay</th><th>Gelir</th><th>Gider</th><th>Bakiye</th></tr></thead>
+        <tbody id="gecmis-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="page-mesajlar" class="page">
+  <div class="box">
+    <div class="box-head">💬 Mesajlar <span id="yeni-badge"></span></div>
+    <div class="msg-mydaire-bar">
+      <label>Daireniz (isim için):</label>
+      <select id="msg-benim-daire" onchange="benimDaireDegisti()">
+        <option value="">Seçiniz...</option>
+      </select>
+    </div>
+    <div class="msg-list" id="msg-list"></div>
+    <div class="msg-input-area">
+      <div class="msg-send-row">
+        <input id="msg-input" placeholder="Mesajınızı yazın..." onkeydown="if(event.key==='Enter')mesajGonder()">
+        <button class="msg-send-btn" onclick="mesajGonder()">Gönder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-acil" class="page">
+  <div class="box">
+    <div class="box-head">🚨 Acil Telefon Numaraları</div>
+    <div id="acil-list" style="padding:6px 0;"></div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="active" onclick="showPage('ozet',this)"><span class="icon">📊</span>Bu Ay</button>
+  <button onclick="showPage('giderler',this)"><span class="icon">📋</span>Giderler</button>
+  <button onclick="showPage('gecmis',this)"><span class="icon">🗓️</span>Geçmiş</button>
+  <button onclick="showPage('mesajlar',this)"><span class="icon">💬</span>Mesajlar<span class="badge-dot" id="nav-dot"></span></button>
+  <button onclick="showPage('acil',this)"><span class="icon">🚨</span>Acil</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const AYLAR=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const KAT={temizlik:'Temizlik',elektrik:'Elektrik',su:'Su',dogalgaz:'Doğalgaz',bakim:'Bakım',diger:'Diğer'};
+const DAIRE=48;
+
+// ── ACİL NUMARALAR (sabit) ──
+// Buradaki numaraları kendiniz düzenleyip dosyayı tekrar paylaşabilirsiniz.
+// Tırnak içine numarayı yazın, boş bırakmak isterseniz '' (boş tırnak) bırakın, o satır gösterilmez.
+const SABIT_ACIL = {
+  yoneticiIsim: '',
+  yonetici:  '',   // Yönetici
+  yardimciIsim: '',
+  yardimci:  '0532 272 71 95',   // Yönetici Yardımcısı
+  gorevliIsim: '',
+  gorevli:   '',   // Görevli
+  diger:     ''    // Ek not (isteğe bağlı)
+};
+const now=new Date();
+
+// Paylaşımlı depodan veri çekip yerel depoya yazar (arka planda, sessizce)
+async function bulutSync(){
+  try{
+    if(window.storage){
+      const result = await window.storage.get('uras_public', true);
+      if(result && result.value){
+        localStorage.setItem('uras_public', result.value);
+      }
+    }
+  }catch(e){ /* depo yoksa/boşsa, mevcut yerel veriyle devam */ }
+}
+
+function getPublic(){
+  try{return JSON.parse(localStorage.getItem('uras_public')||'null')||{aidatlar:{},giderler:[],mesajlar:[]};}
+  catch(e){return {aidatlar:{},giderler:[],mesajlar:[]};}
+}
+function getState(){
+  try{return JSON.parse(localStorage.getItem('uras_v2')||'null')||{sakinler:{},mesajlar:[]};}
+  catch(e){return {sakinler:{},mesajlar:[]};}
+}
+function saveState(s){localStorage.setItem('uras_v2',JSON.stringify(s));}
+function savePublic(pub){localStorage.setItem('uras_public',JSON.stringify(pub));}
+
+function fillSelects(){
+  ['o-ay','g-ay'].forEach(id=>{
+    document.getElementById(id).innerHTML=AYLAR.map((a,i)=>`<option value="${i}" ${i===now.getMonth()?'selected':''}>${a}</option>`).join('');
+  });
+  ['o-yil','g-yil'].forEach(id=>{
+    let opts='';
+    for(let y=now.getFullYear()-2;y<=now.getFullYear()+1;y++) opts+=`<option value="${y}" ${y===now.getFullYear()?'selected':''}>${y}</option>`;
+    document.getElementById(id).innerHTML=opts;
+  });
+  // Daire listesi
+  const st=getState();
+  const sel=document.getElementById('msg-benim-daire');
+  let opts='<option value="">Seçiniz...</option>';
+  for(let i=1;i<=DAIRE;i++){
+    const sk=st.sakinler&&st.sakinler[i];
+    const isim=(sk&&sk.isim)?sk.isim:`Daire ${i}`;
+    opts+=`<option value="${i}">${i} - ${isim}</option>`;
+  }
+  sel.innerHTML=opts;
+  const kayitliDaire=localStorage.getItem('uras_benim_daire');
+  if(kayitliDaire) sel.value=kayitliDaire;
+}
+
+function benimDaireDegisti(){
+  const val=document.getElementById('msg-benim-daire').value;
+  if(val) localStorage.setItem('uras_benim_daire', val);
+  else localStorage.removeItem('uras_benim_daire');
+  renderMesajlar();
+}
+
+function getAy(p){
+  const ay=parseInt(document.getElementById(p+'-ay').value);
+  const yil=parseInt(document.getElementById(p+'-yil').value);
+  return {ay,yil,key:`${yil}-${String(ay+1).padStart(2,'0')}`};
+}
+
+function renderOzet(){
+  const {ay,yil,key}=getAy('o');
+  const pub=getPublic();
+  const ayData=pub.aidatlar[key]||{toplam:0,odenen:0,tutar:0,gelir:0};
+  const odenen=ayData.odenen||0;
+  const gelir=ayData.gelir!==undefined ? ayData.gelir : odenen*(ayData.tutar||0);
+  const gider=(pub.giderler||[]).filter(g=>g.ay===ay&&g.yil===yil).reduce((s,g)=>s+g.tutar,0);
+  const bakiye=gelir-gider;
+  const pct=Math.round(odenen/DAIRE*100);
+
+  document.getElementById('ozet-cards').innerHTML=`
+    <div class="card"><div class="clabel">Aidat Geliri</div><div class="cval green">${fmt(gelir)} ₺</div></div>
+    <div class="card"><div class="clabel">Toplam Gider</div><div class="cval red">${fmt(gider)} ₺</div></div>
+    <div class="card"><div class="clabel">Net Bakiye</div><div class="cval ${bakiye>=0?'green':'red'}">${fmt(bakiye)} ₺</div></div>
+    <div class="card"><div class="clabel">Ödeme Oranı</div><div class="cval">${pct}%</div></div>`;
+
+  document.getElementById('aidat-progress').innerHTML=`
+    <div class="box" style="padding:16px;">
+      <div class="progress-label"><span>Aidat Tahsilat</span><span>${odenen} / ${DAIRE} daire</span></div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`;
+}
+
+function renderGiderler(){
+  const {ay,yil}=getAy('g');
+  const pub=getPublic();
+  const liste=(pub.giderler||[]).filter(g=>g.ay===ay&&g.yil===yil);
+  const toplam=liste.reduce((s,g)=>s+g.tutar,0);
+  document.getElementById('gider-top-text').textContent=liste.length?`Toplam: ${fmt(toplam)} ₺`:'';
+  const tbody=document.getElementById('gider-tbody');
+  if(!liste.length){tbody.innerHTML=`<tr><td colspan="4" class="empty">Bu ay gider kaydı yok.</td></tr>`;return;}
+  tbody.innerHTML=liste.map(g=>`
+    <tr>
+      <td style="font-size:0.78rem">${new Date(g.tarih).toLocaleDateString('tr-TR',{day:'numeric',month:'short'})}</td>
+      <td style="font-size:0.8rem">${g.ac||g.aciklama||'—'}</td>
+      <td><span class="kat kat-${g.kat||g.kategori}">${KAT[g.kat||g.kategori]||'Diğer'}</span></td>
+      <td style="font-weight:600">${fmt(g.tutar)} ₺</td>
+    </tr>`).join('');
+}
+
+function renderGecmis(){
+  const pub=getPublic();
+  const keys=Object.keys(pub.aidatlar||{}).sort().reverse();
+  const tbody=document.getElementById('gecmis-tbody');
+  if(!keys.length){tbody.innerHTML=`<tr><td colspan="4" class="empty">Henüz veri yok.</td></tr>`;return;}
+  tbody.innerHTML=keys.map(k=>{
+    const [y,m]=k.split('-').map(Number);
+    const a=m-1;
+    const ad=pub.aidatlar[k];
+    const gelir=ad.gelir!==undefined ? ad.gelir : (ad.odenen||0)*(ad.tutar||0);
+    const gdr=(pub.giderler||[]).filter(g=>g.ay===a&&g.yil===y).reduce((s,g)=>s+g.tutar,0);
+    const bk=gelir-gdr;
+    return `<tr>
+      <td>${AYLAR[a]} ${y}</td>
+      <td style="color:var(--forest)">${fmt(gelir)} ₺</td>
+      <td style="color:var(--red)">${fmt(gdr)} ₺</td>
+      <td style="color:${bk>=0?'var(--forest)':'var(--red)'}"><strong>${fmt(bk)} ₺</strong></td>
+    </tr>`;
+  }).join('');
+}
+
+async function mesajGonder(){
+  const daireNo=document.getElementById('msg-benim-daire').value;
+  const txt=document.getElementById('msg-input').value.trim();
+  if(!daireNo){toast('Lütfen önce dairenizi seçin!');return;}
+  if(!txt){toast('Mesaj yazın!');return;}
+
+  const st=getState();
+  if(!st.mesajlar) st.mesajlar=[];
+  const skSel=st.sakinler&&st.sakinler[daireNo];
+  const isim=(skSel&&skSel.isim)?skSel.isim:`Daire ${daireNo}`;
+  const yeniMesaj={
+    id:Date.now(),
+    gonderen:'sakin',
+    daire:daireNo,
+    isim:`${isim} (D.${daireNo})`,
+    mesaj:txt,
+    tarih:new Date().toLocaleString('tr-TR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}),
+    okundu:false
+  };
+  st.mesajlar.push(yeniMesaj);
+  saveState(st);
+
+  // Public'e de yaz ki yönetici görsün (yerel + paylaşımlı depo)
+  const pub=getPublic();
+  if(!pub.mesajlar) pub.mesajlar=[];
+  pub.mesajlar.push(yeniMesaj);
+  savePublic(pub);
+  try{
+    if(window.storage){
+      await window.storage.set('uras_public', JSON.stringify(pub), true);
+    }
+  }catch(e){ /* depo yoksa, yerelde kaldı, bir sonraki sync'te denenir */ }
+
+  document.getElementById('msg-input').value='';
+  toast('Mesajınız gönderildi');
+  renderMesajlar();
+}
+
+function renderMesajlar(){
+  const pub=getPublic();
+  const mesajlar=pub.mesajlar||[];
+
+  const yeniYonetici=mesajlar.filter(m=>m.gonderen==='yonetici'&&!m._sakinOkudu).length;
+  const badge=document.getElementById('yeni-badge');
+  if(badge) badge.textContent=yeniYonetici?`${yeniYonetici} yeni`:'';
+  updateNavDot(0);
+
+  const el=document.getElementById('msg-list');
+  if(!mesajlar.length){el.innerHTML=`<div class="empty">Henüz mesaj yok.</div>`;return;}
+  el.innerHTML=mesajlar.map(m=>`
+    <div class="msg-bubble ${m.gonderen}">
+      <div class="msg-inner">${escHtml(m.mesaj)}</div>
+      <div class="msg-meta">${m.isim} · ${m.tarih}</div>
+    </div>`).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function updateNavDot(sayi){
+  const pub=getPublic();
+  const yeni=sayi!==undefined?sayi:(pub.mesajlar||[]).filter(m=>m.gonderen==='yonetici').length;
+  // Basit: sadece yönetici mesajı varsa dot göster
+  const dot=document.getElementById('nav-dot');
+  if(dot) dot.className='badge-dot'+(yeni>0?' show':'');
+}
+
+// Yeni yönetici mesajı var mı kontrol et
+function checkYeniMesaj(){
+  if(document.getElementById('page-mesajlar').classList.contains('active')) renderMesajlar();
+  else {
+    const pub=getPublic();
+    const yeni=(pub.mesajlar||[]).filter(m=>m.gonderen==='yonetici').length;
+    updateNavDot(yeni>0?1:0);
+  }
+}
+setInterval(checkYeniMesaj,3000);
+
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.bottom-nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='ozet') renderOzet();
+  else if(id==='giderler') renderGiderler();
+  else if(id==='gecmis') renderGecmis();
+  else if(id==='mesajlar') renderMesajlar();
+  else if(id==='acil') renderAcil();
+}
+
+function renderAcil(){
+  const a=SABIT_ACIL;
+  const satirlar=[
+    {ad:'Acil Durum', tel:'112', ikon:'🚨', sabit:true},
+    {ad:a.yoneticiIsim ? `Yönetici (${a.yoneticiIsim})` : 'Yönetici', tel:a.yonetici, ikon:'👤'},
+    {ad:a.yardimciIsim ? `Yönetici Yardımcısı (${a.yardimciIsim})` : 'Yönetici Yardımcısı', tel:a.yardimci, ikon:'🙋'},
+    {ad:a.gorevliIsim ? `Görevli (${a.gorevliIsim})` : 'Görevli', tel:a.gorevli, ikon:'🧹'},
+  ];
+  const dolu=satirlar.filter(s=>s.tel);
+  const el=document.getElementById('acil-list');
+  if(!dolu.length){
+    el.innerHTML=`<div class="empty">Henüz acil numara eklenmemiş.</div>`;
+    return;
+  }
+  el.innerHTML=dolu.map(s=>`
+    <div class="acil-card">
+      <div>
+        <div class="acil-label">${s.ikon} ${s.ad}</div>
+        <div class="acil-sub">${s.tel}</div>
+      </div>
+      <a href="tel:${s.tel.replace(/\s/g,'')}">Ara</a>
+    </div>`).join('') +
+    (a.diger ? `<div class="acil-note">📝 ${escHtml(a.diger)}</div>` : '');
+}
+
+function fmt(n){return Math.round(n).toLocaleString('tr-TR');}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+// Aktif olan sayfayı bulutdan gelen güncel veriyle yeniden çizer
+function aktifSayfaYenile(){
+  const aktif = document.querySelector('.page.active');
+  if(!aktif) return;
+  const id = aktif.id.replace('page-','');
+  if(id==='ozet') renderOzet();
+  else if(id==='giderler') renderGiderler();
+  else if(id==='gecmis') renderGecmis();
+  else if(id==='mesajlar') renderMesajlar();
+}
+
+// İlk açılış: önce buluttan çek, sonra ekranı çiz
+fillSelects();
+bulutSync().then(()=>{
+  fillSelects(); // sakinler güncellenmiş olabilir, mesaj daire listesini tazele
+  renderOzet();
+});
+
+// Her 5 saniyede bir buluttan tazele (yönetici tarafında yapılan değişiklikler otomatik yansır)
+setInterval(()=>{
+  bulutSync().then(aktifSayfaYenile);
+}, 5000);
+</script>
+</body>
+</html>
